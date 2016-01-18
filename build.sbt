@@ -16,6 +16,6 @@ libraryDependencies ++= Seq(
   anorm,
   cache,
   ws,
-"com.firebase"%"firebase-client-android"%"1.1.1"
+  "com.firebase" % "firebase-client-android" % "1.1.1"
 )
 

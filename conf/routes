@@ -3,8 +3,8 @@
 # ~~~~
 
 # Home page
-GET        /                              controllers.Application.index
+GET        /                    controllers.Application.index
 
-GET        /info                          controllers.Application.socket
+GET        /info                controllers.Application.socket
 
 GET        /assets/*file        controllers.Assets.at(path = "/public", file)

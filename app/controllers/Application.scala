@@ -14,11 +14,11 @@ object Application extends Controller {
 
   def index = Action.async { request =>
     scala.concurrent.Future {
-      Ok(views.html.main("Alarm Service", request.host))
+      Ok(views.html.index("Alarm Service", request.host))
     }
 
-
   }
+
 
 
   def socket = WebSocket.using[JsValue] { request =>

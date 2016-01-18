@@ -1,0 +1,118 @@
+@(title: String, host: String)(implicit lang: Lang)
+<!DOCTYPE HTML>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href='https://fonts.googleapis.com/css?family=Oswald' rel='stylesheet' type='text/css'>
+        <title>@title</title>
+        <link rel="stylesheet" media="screen" href="@("http://" + host + "/assets/css/all.css")">
+        <link rel="stylesheet" media="screen" href="@("http://" + host + "/assets/css/jcf.css")">
+        <link rel="stylesheet"
+        href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+        integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
+        crossorigin="anonymous">
+        <script src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
+        <script src="@("http://" + host + "/assets/js/jcf.js")"></script>
+        <script src="@("http://" + host + "/assets/js/jcf.scrollable.js")"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-dateFormat/1.0/jquery.dateFormat.min.js"></script>
+        <script src="http://vjs.zencdn.net/ie8/1.1.1/videojs-ie8.min.js"></script>
+        <script src="http://vjs.zencdn.net/5.4.4/video.js"></script>
+        <script language="javascript" type="text/javascript">
+
+  var wsUri = "@("ws://" + host + "/info")";
+  var output;
+
+  function init(){
+    output = document.getElementById("output");
+    testWebSocket();
+  }
+		$(window).on('load', function() {
+			jcf.replaceAll();
+		});
+
+  function testWebSocket(){
+    websocket = new WebSocket(wsUri);
+    websocket.onmessage = function(evt) { onMessage(evt) };
+  }
+
+  function updateDevice(v){
+    if(v.online){
+        jQuery("#online").addClass('on')
+    } else{
+        jQuery("#online").removeClass('on')
+    }
+    var content=jQuery("#content")
+    if(content.find("#"+v.event.startTime).length===0){
+    content.prepend(
+     '<video id="my-video'+v.event.startTime+'"style="background:black" class=" video-box" controls preload="auto" width="434px" height="244px"' +
+      'poster="@("http://" + host + "/assets/images/video-01.jpg")"' +
+       '>' +
+//     '<source src="'+v.event.video+'" type="video/mp4"' +
+      '<source src="https://r1---sn-25ge7ned.googlevideo.com/videoplayback?mv=m&mt=1452944367&ms=au&sver=3&dur=130.960&itag=18&mn=sn-25ge7ned&key=yt6&signature=1F5EF252136662458F4673A2D81949A075F344FC.CE27E41E98C62CC123D4EBD82581594850679E8D&mm=31&fexp=9410705%2C9416126%2C9419544%2C9420452%2C9421932%2C9422123%2C9422596%2C9422672%2C9423042%2C9423662%2C9426054%2C9426921&expire=1452966115&id=o-AKPv1tIujzXIkl1JNaTD4JxN_uJcxQmM3YUDTQoOoCtY&lmt=1389889733109948&ip=62.210.141.198&initcwndbps=9057500&sparams=dur%2Cid%2Cinitcwndbps%2Cip%2Cipbits%2Citag%2Clmt%2Cmime%2Cmm%2Cmn%2Cms%2Cmv%2Cnh%2Cpl%2Cratebypass%2Crequiressl%2Csource%2Cupn%2Cusequic%2Cexpire&source=youtube&pl=24&nh=IgpwcjAxLnBhcjAxKgkxMjcuMC4wLjE&upn=BQe8syjN8XY&ipbits=0&mime=video%2Fmp4&requiressl=yes&usequic=no&ratebypass=yes&title=Drunk%20Santa%20Caught%20On%20Surveillance%20Cam%20!&v=kVMXo0QbFiY" type="video/mp4"/>' +
+
+     '<p class="vjs-no-js">' +
+     'To view this video please enable JavaScript, and consider upgrading to a web browser that' +
+     '<a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p></video>' +
+      '<div id="'+v.event.startTime+'" class="info-row">' +
+           '<span    class="video-date">Online</span>' +
+           '<h2>'+v.name+'</h2>'+
+          '</div></div>')
+    }
+    if(typeof v.event.endTime != 'undefined'){
+    var endTime = new Date(v.event.endTime);
+   jQuery("#history").append('<div class="history-video" >' +
+    ' <div class="video-frame" syle="width:434px height:244px" id="frame'+v.event.startTime+'" ></div></div>');//.addClass( "history-video" ).add("div").removeClass("history-video").attr('id', 'frame'+v.event.startTime).addClass( "video-frame" );
+    content.find("#"+v.event.startTime).text("Recording from: "+jQuery.format.date(endTime,"dd.MM.yyyy HH:mm"));
+
+     content.find("#my-video"+v.event.startTime).appendTo('#frame'+v.event.startTime);
+       content.find("#"+v.event.startTime).appendTo('#frame'+v.event.startTime);
+       jcf.replaceAll();
+    }
+   }
+
+  function onMessage(evt){
+    var message= jQuery.parseJSON( evt.data );
+    var block=jQuery("#"+message.device)
+    if(block.length===0){
+    jQuery("#body").append('<div id="'+message.device+'" class="video-block">' +
+       '<video id="my-video" class="video-js video-frame2" controls preload="auto" height="354px" width="629px" poster="@("http://" + host + "/assets/images/video-01.jpg")">' +
+        '<source src="'+message.url+'" type="video/mp4"/>' +
+//          '<source src="http://r7---sn-aigllnzl.googlevideo.com/videoplayback?ipbits=0&key=yt6&sver=3&pl=33&mn=sn-aigllnzl&ip=2a02%3A2498%3Ae003%3A46%3A3%3A60%3A0%3A2&mm=31&itag=18&ms=au&initcwndbps=3567500&mv=m&dur=35.898&mt=1452081591&id=o-AOsLXd8XwLk90MI_4HcKVe1sUznMEbXZuJyfP7Jq79m3&fexp=9408253%2C9410705%2C9412859%2C9415867%2C9416126%2C9417529%2C9418199%2C9420053%2C9420452%2C9422596%2C9422841%2C9423662%2C9424299%2C9424822%2C9425699%2C9425783%2C9425791%2C9426010%2C9426503%2C9426722&sparams=dur%2Cid%2Cinitcwndbps%2Cip%2Cipbits%2Citag%2Clmt%2Cmime%2Cmm%2Cmn%2Cms%2Cmv%2Cnh%2Cpl%2Cratebypass%2Csource%2Cupn%2Cexpire&mime=video%2Fmp4&lmt=1451044129298055&ratebypass=yes&expire=1452103278&signature=3CCDD356EE541A32E3D934DEF77FD39123C86563.9BE65943D512F476F991E38A4EDE43EAE8DD1B47&nh=IgpwcjAzLmxocjE0KgkxMjcuMC4wLjE&source=youtube&upn=AwyGLxNYVkA&title=Santa+caught+on+our+security+camera" type="video/mp4"/>' +
+         '<p class="vjs-no-js">' +
+          'To view this video please enable JavaScript, and consider upgrading to a web browser that' +
+           '<a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p></video>' +
+        '</div><div class="video-block video-info">' +
+         '<span id="online" class="video-status"></span>	<!-- add class "on" to change color to green -->' +
+          '<h1 class="bordered">'+message.name+'</h1>' +
+           '<span class="liner"></span>' +
+            '<div class="text">' +
+             '<p>In main camera window camera is always on and shows the room online all the time. Event view starts when the motion in the room is detected.' +
+              ' Below the event view you can see history of recordings and watch a video from the archive.</p>' +
+              '</div></div>');
+    updateDevice(message);
+    }else{
+    updateDevice(message);
+    }
+  }
+  window.addEventListener("load", init, false);
+
+  </script>
+    </head>
+    <body>
+        <section class="video-section">
+            <div id="body" class="video-holder">
+            </div>
+            <div class="video-content">
+                <div id="content" class="video-real video-block">
+
+                </div>
+                <div class="video-block history">
+                    <div id="history" class="history-holder jcf-scrollable">
+
+                    </div>
+                </div>
+            </div>
+        </section>
+    </body>
+</html>
